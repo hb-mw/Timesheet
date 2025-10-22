@@ -17,4 +17,8 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Timesheet.Infra\Timesheet.Infra.csproj" />
+    </ItemGroup>
+
 </Project>

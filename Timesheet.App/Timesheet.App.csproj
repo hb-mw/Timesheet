@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Timesheet.App\Timesheet.App.csproj" />
+      <ProjectReference Include="..\Src\Timesheet.Core\Timesheet.Core.csproj" />
     </ItemGroup>
 
 </Project>
