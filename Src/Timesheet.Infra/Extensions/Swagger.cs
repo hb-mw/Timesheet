@@ -8,12 +8,10 @@ public static class Swagger
 {
     public static IApplicationBuilder AddSwaggerUi(this IApplicationBuilder app, string name)
     {
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/openapi/v1.json", name);
-        });
-        
-        var lifetime = app.ApplicationServices.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>();
+        app.UseSwaggerUI(c => { c.SwaggerEndpoint("/openapi/v1.json", name); });
+
+        var lifetime =
+            app.ApplicationServices.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() =>
         {
             var server = app.ApplicationServices.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>();

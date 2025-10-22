@@ -1,12 +1,14 @@
+using Timesheet.API.Middlewares;
 using Timesheet.Infra.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddTimesheetInfrastructure();
+
 builder.Services.AddControllers();
 
-builder.Services.AddTimesheetInfrastructure();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
@@ -18,6 +20,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Timesheet.Core.Interfaces.Repositories;
 using Timesheet.Core.Models;
 
@@ -5,53 +6,34 @@ namespace Timesheet.Infra.Data.Repositories;
 
 public class InMemoryTimesheetEntryRepository : ITimesheetEntryRepository
 {
-    private List<TimesheetEntry> _entries = [];
-    
+    private ConcurrentDictionary<Guid, TimesheetEntry> _entries = [];
+
     public void Add(TimesheetEntry entry)
     {
-        _entries.Add(entry);
+        _entries.TryAdd(entry.Id, entry);
     }
 
     public void Update(TimesheetEntry entry)
     {
-        var index = _entries.FindIndex(e => e.Id == entry.Id);
-        
-        if (index != -1)
-        {
-            _entries[ index ] = entry;
-        }
-        else
-        {
-            //TODO Better exception handling and should reflect the responses in the API
-            throw new KeyNotFoundException("Entry not found on update");
-        }
+        _entries[entry.Id] = entry;
     }
 
     public void Delete(Guid id)
     {
-        var entryToDelete = _entries.FirstOrDefault(entry => entry.Id == id);
-        if (entryToDelete is null)
-        {
-            //TODO Better exception handling and should reflect the responses in the API
-            throw new KeyNotFoundException("Entry not found on delete.");
-        }
-        _entries.Remove(entryToDelete);
-    }
-
-    public TimesheetEntry? GetById(Guid id)
-    {
-        // TODO: to be handled better to return 404 in our api.
-        return _entries.FirstOrDefault(entry => entry.Id == id);
+        _entries.TryRemove(id, out _);
     }
 
     public IEnumerable<TimesheetEntry> GetForUser(int userId)
     {
-        return _entries.Where(e => e.UserId == userId).OrderBy(e => e.Date);
+        return _entries.Values
+            .Where(e => e.UserId == userId)
+            .OrderBy(e => e.Date)
+            .ToList();
     }
 
     public IEnumerable<TimesheetEntry> GetForUserBetween(int userId, DateOnly from, DateOnly to)
     {
-        return _entries
+        return _entries.Values
             .Where(e => e.UserId == userId && e.Date >= from && e.Date <= to)
             .OrderBy(e => e.Date)
             .ToList();
@@ -59,7 +41,14 @@ public class InMemoryTimesheetEntryRepository : ITimesheetEntryRepository
 
     public bool Exists(int userId, int projectId, DateOnly date)
     {
-        // TODO : maybe find a better solution , lets get core functionality working first.
-        return _entries.Any(e => e.UserId == userId && e.ProjectId == projectId && e.Date == date);
+        return _entries.Values.Any(e =>
+            e.UserId == userId &&
+            e.ProjectId == projectId &&
+            e.Date == date);
+    }
+
+    public bool Exists(Guid id)
+    {
+        return _entries.ContainsKey(id);
     }
 }
