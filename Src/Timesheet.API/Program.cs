@@ -1,10 +1,15 @@
+using Timesheet.Infra.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddTimesheetInfrastructure();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+//builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -20,4 +25,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.AddSwaggerUi("Timesheet API");
 app.Run();

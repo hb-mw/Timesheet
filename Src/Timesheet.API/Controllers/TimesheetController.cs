@@ -8,6 +8,14 @@ namespace Timesheet.API.Controllers;
 public class TimesheetController(ITimesheetEntryService timesheetEntryService) : ApiController
 {
     private readonly ITimesheetEntryService _timesheetEntryService = timesheetEntryService;
+
+    [HttpGet("user/{userId:int}")]
+    public ActionResult<IEnumerable<TimesheetEntry>> GetForUser(
+        [FromRoute] int userId)
+    {
+        var entries = _timesheetEntryService.GetEntriesForUser(userId);
+        return Ok(entries);
+    }
     
     [HttpPost]
     public ActionResult<TimesheetEntry> Add([FromBody] TimesheetEntry entry)

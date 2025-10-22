@@ -1,11 +1,11 @@
 using Timesheet.Core.Interfaces.Repositories;
 using Timesheet.Core.Models;
 
-namespace Timesheet.Infra.Repositories;
+namespace Timesheet.Infra.Data.Repositories;
 
 public class InMemoryTimesheetEntryRepository : ITimesheetEntryRepository
 {
-    private readonly List<TimesheetEntry> _entries = [];
+    private List<TimesheetEntry> _entries = [];
     
     public void Add(TimesheetEntry entry)
     {
@@ -35,12 +35,18 @@ public class InMemoryTimesheetEntryRepository : ITimesheetEntryRepository
             //TODO Better exception handling and should reflect the responses in the API
             throw new KeyNotFoundException("Entry not found on delete.");
         }
+        _entries.Remove(entryToDelete);
     }
 
     public TimesheetEntry? GetById(Guid id)
     {
         // TODO: to be handled better to return 404 in our api.
         return _entries.FirstOrDefault(entry => entry.Id == id);
+    }
+
+    public IEnumerable<TimesheetEntry> GetForUser(int userId)
+    {
+        return _entries.Where(e => e.UserId == userId).OrderBy(e => e.Date);
     }
 
     public IEnumerable<TimesheetEntry> GetForUserBetween(int userId, DateOnly from, DateOnly to)

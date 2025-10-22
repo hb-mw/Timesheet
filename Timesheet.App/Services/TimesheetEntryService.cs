@@ -27,6 +27,11 @@ public class TimesheetEntryService(ITimesheetEntryRepository repository) : ITime
         repository.Delete(id);   
     }
 
+    public IEnumerable<TimesheetEntry> GetEntriesForUser(int userId)
+    {
+        return repository.GetForUser(userId);
+    }
+
     public IEnumerable<TimesheetEntry> GetEntriesForUserWeek(int userId, DateOnly startDate)
     {
         var result = repository.GetForUserBetween(userId, startDate, startDate.AddDays(6));
