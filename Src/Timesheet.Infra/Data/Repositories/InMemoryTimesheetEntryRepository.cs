@@ -39,16 +39,16 @@ public class InMemoryTimesheetEntryRepository : ITimesheetEntryRepository
             .ToList();
     }
 
+    public TimesheetEntry? Get(Guid id)
+    {
+        return _entries.GetValueOrDefault(id);
+    }
+
     public bool Exists(int userId, int projectId, DateOnly date)
     {
         return _entries.Values.Any(e =>
             e.UserId == userId &&
             e.ProjectId == projectId &&
             e.Date == date);
-    }
-
-    public bool Exists(Guid id)
-    {
-        return _entries.ContainsKey(id);
     }
 }

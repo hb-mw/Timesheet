@@ -5,21 +5,21 @@ using Timesheet.Core.Models;
 
 namespace Timesheet.App.Services;
 
-// TODO : All Validations will be handled correctly later.
 public class TimesheetEntryService(ITimesheetEntryRepository repository) : ITimesheetEntryService
 {
     public void AddEntry(TimesheetEntry entry)
     {
-        EnsureTotalDailyHoursNotExceeded(entry.UserId, entry.Date, entry.Hours);
-        EnsureNotDuplicated(entry.UserId, entry.ProjectId, entry.Date);
+        EnsureTotalDailyHoursNotExceeded(entry, null);
+        EnsureNotDuplicated(entry, null);
         repository.Add(entry);
     }
 
     public void UpdateEntry(TimesheetEntry entry)
     {
-        EnsureEntryExists(entry.Id);
-        EnsureTotalDailyHoursNotExceeded(entry.UserId, entry.Date, entry.Hours);
-        EnsureNotDuplicated(entry.UserId, entry.ProjectId, entry.Date);
+        var existing = EnsureEntryExists(entry.Id);
+
+        EnsureTotalDailyHoursNotExceeded(entry, existing);
+        EnsureNotDuplicated(entry, existing.Id);
         repository.Update(entry);
     }
 
@@ -49,22 +49,37 @@ public class TimesheetEntryService(ITimesheetEntryRepository repository) : ITime
             .ToDictionary(g => g.Key, g => g.Sum(e => e.Hours));
     }
 
-    private void EnsureEntryExists(Guid id)
+    private TimesheetEntry EnsureEntryExists(Guid id)
     {
-        if (!repository.Exists(id)) throw new TimesheetEntryDoesNotExistException(id);
+        var existing = repository.Get(id);
+        if (existing is null)
+            throw new TimesheetEntryDoesNotExistException(id);
+
+        return existing;
     }
 
-    private void EnsureNotDuplicated(int userId, int projectId, DateOnly date)
+    private void EnsureNotDuplicated(TimesheetEntry entry, Guid? excludeId)
     {
-        if (repository.Exists(userId, projectId, date))
-            throw new TimesheetDuplicateEntryException(userId, projectId, date);
+        var duplicates = repository
+            .GetForUserBetween(entry.UserId, entry.Date, entry.Date)
+            .Any(e => e.ProjectId == entry.ProjectId && e.Id != excludeId);
+
+        if (duplicates)
+            throw new TimesheetDuplicateEntryException(entry.UserId, entry.ProjectId, entry.Date);
     }
 
-    private void EnsureTotalDailyHoursNotExceeded(int userId, DateOnly date, decimal hoursToAdd)
+    private void EnsureTotalDailyHoursNotExceeded(TimesheetEntry entry, TimesheetEntry? existing)
     {
-        var entries = repository.GetForUserBetween(userId, date, date);
+        var entries = repository
+            .GetForUserBetween(entry.UserId, entry.Date, entry.Date)
+            .ToList();
+
         var currentTotalHours = entries.Sum(e => e.Hours);
-        if (currentTotalHours + hoursToAdd > 12)
-            throw new TimesheetDailyHoursExceededException(12 - currentTotalHours, date);
+
+        if (existing is not null && existing.UserId == entry.UserId && existing.Date == entry.Date)
+            currentTotalHours -= existing.Hours;
+
+        if (currentTotalHours + entry.Hours > 12)
+            throw new TimesheetDailyHoursExceededException(12 - currentTotalHours, entry.Date);
     }
 }

@@ -33,8 +33,6 @@ public class TimesheetEntryServiceTests
         var entry = CreateEntry();
 
         _repo.GetForUserBetween(entry.UserId, entry.Date, entry.Date).Returns(Array.Empty<TimesheetEntry>());
-        _repo.Exists(entry.UserId, entry.ProjectId, entry.Date).Returns(false);
-        _repo.Exists(entry.Id).Returns(true);
 
         _service.AddEntry(entry);
 
@@ -59,9 +57,9 @@ public class TimesheetEntryServiceTests
     public void AddEntry_ShouldThrow_WhenDuplicateExists()
     {
         var entry = CreateEntry();
+        var duplicate = CreateEntry(entry.UserId, entry.ProjectId, date: entry.Date, hours: 0);
 
-        _repo.GetForUserBetween(entry.UserId, entry.Date, entry.Date).Returns(Array.Empty<TimesheetEntry>());
-        _repo.Exists(entry.UserId, entry.ProjectId, entry.Date).Returns(true);
+        _repo.GetForUserBetween(entry.UserId, entry.Date, entry.Date).Returns(new[] { duplicate });
 
         var action = () => _service.AddEntry(entry);
 
@@ -72,7 +70,7 @@ public class TimesheetEntryServiceTests
     public void UpdateEntry_ShouldThrow_WhenEntryDoesNotExist()
     {
         var entry = CreateEntry();
-        _repo.Exists(entry.Id).Returns(false);
+        _repo.Get(entry.Id).Returns((TimesheetEntry?)null);
 
         var action = () => _service.UpdateEntry(entry);
 
@@ -82,11 +80,12 @@ public class TimesheetEntryServiceTests
     [Fact]
     public void UpdateEntry_ShouldUpdate_WhenValid()
     {
-        var entry = CreateEntry();
+        var existing = CreateEntry();
+        var entry = CreateEntry(existing.UserId, existing.ProjectId, 10, existing.Date);
+        entry.Id = existing.Id;
 
-        _repo.Exists(entry.Id).Returns(true);
-        _repo.GetForUserBetween(entry.UserId, entry.Date, entry.Date).Returns(Array.Empty<TimesheetEntry>());
-        _repo.Exists(entry.UserId, entry.ProjectId, entry.Date).Returns(false);
+        _repo.Get(entry.Id).Returns(existing);
+        _repo.GetForUserBetween(entry.UserId, entry.Date, entry.Date).Returns(new[] { existing });
 
         _service.UpdateEntry(entry);
 
@@ -97,7 +96,7 @@ public class TimesheetEntryServiceTests
     public void DeleteEntry_ShouldThrow_WhenEntryDoesNotExist()
     {
         var id = Guid.NewGuid();
-        _repo.Exists(id).Returns(false);
+        _repo.Get(id).Returns((TimesheetEntry?)null);
 
         var action = () => _service.DeleteEntry(id);
 
@@ -108,7 +107,9 @@ public class TimesheetEntryServiceTests
     public void DeleteEntry_ShouldDelete_WhenExists()
     {
         var id = Guid.NewGuid();
-        _repo.Exists(id).Returns(true);
+        var existing = CreateEntry();
+        existing.Id = id;
+        _repo.Get(id).Returns(existing);
 
         _service.DeleteEntry(id);
 
