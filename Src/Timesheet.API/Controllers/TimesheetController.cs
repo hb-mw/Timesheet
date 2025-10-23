@@ -67,9 +67,6 @@ public class TimesheetController(ITimesheetEntryService timesheetEntryService) :
     [HttpGet("week")]
     public ActionResult<IEnumerable<TimesheetEntryResponse>> GetWeek([FromQuery] GetWeekQuery query)
     {
-        // if (!DateOnly.TryParse(query.StartDate, out var start))
-        //     return BadRequest("weekStart must be a valid date (yyyy-MM-dd).");
-
         var entries = _timesheetEntryService.GetEntriesForUserWeek(query.UserId, query.StartDate);
         var response = entries.Adapt<IEnumerable<TimesheetEntryResponse>>();
         return Ok(response);
@@ -82,9 +79,6 @@ public class TimesheetController(ITimesheetEntryService timesheetEntryService) :
     public ActionResult<IEnumerable<TotalHoursPerProjectResponse>> GetTotals(
         [FromQuery] GetTotalPerProjectQuery query)
     {
-        // if (!DateOnly.TryParse(weekStart, out var start))
-        //     return BadRequest("weekStart must be a valid date (yyyy-MM-dd).");
-
         var totals = _timesheetEntryService.GetTotalHoursPerProject(query.UserId, query.StartDate);
         var response = totals.Adapt<IEnumerable<TotalHoursPerProjectResponse>>();
         return Ok(response);

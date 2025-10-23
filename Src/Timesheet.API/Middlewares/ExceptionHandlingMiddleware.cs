@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Timesheet.Core.Exceptions;
 using FluentValidationValidationException = FluentValidation.ValidationException;
 using TimesheetValidationException = Timesheet.Core.Exceptions.ValidationException;
@@ -11,11 +12,12 @@ public sealed class ExceptionHandlingMiddleware
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+
+    private readonly RequestDelegate _next;
 
     public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
@@ -36,10 +38,10 @@ public sealed class ExceptionHandlingMiddleware
                 ex.ErrorCode, ex.FieldErrors.Count, context.TraceIdentifier, ex.FieldErrors);
 
             await WriteProblemAsync(context,
-                statusCode: StatusCodes.Status400BadRequest,
-                title: ex.Message,
-                code: ex.ErrorCode,
-                details: new Dictionary<string, object?> { ["errors"] = ex.FieldErrors });
+                StatusCodes.Status400BadRequest,
+                ex.Message,
+                ex.ErrorCode,
+                new Dictionary<string, object?> { ["errors"] = ex.FieldErrors });
         }
         catch (FluentValidationValidationException ex)
         {
@@ -52,10 +54,10 @@ public sealed class ExceptionHandlingMiddleware
                 errors.Count, context.TraceIdentifier, errors);
 
             await WriteProblemAsync(context,
-                statusCode: StatusCodes.Status400BadRequest,
-                title: "Validation failed.",
-                code: "Timesheet.ValidationFailed",
-                details: new Dictionary<string, object?> { ["errors"] = errors });
+                StatusCodes.Status400BadRequest,
+                "Validation failed.",
+                "Timesheet.ValidationFailed",
+                new Dictionary<string, object?> { ["errors"] = errors });
         }
         catch (TimesheetException ex)
         {
@@ -64,20 +66,20 @@ public sealed class ExceptionHandlingMiddleware
                 ex.ErrorCode, ex.StatusCode, context.TraceIdentifier, ex.Message, ex.Details);
 
             await WriteProblemAsync(context,
-                statusCode: ex.StatusCode,
-                title: ex.Message,
-                code: ex.ErrorCode,
-                details: ex.Details);
+                ex.StatusCode,
+                ex.Message,
+                ex.ErrorCode,
+                ex.Details);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception. TraceId={TraceId}", context.TraceIdentifier);
 
             await WriteProblemAsync(context,
-                statusCode: StatusCodes.Status500InternalServerError,
-                title: "An unexpected error occurred.",
-                code: "Server.Error",
-                details: null);
+                StatusCodes.Status500InternalServerError,
+                "An unexpected error occurred.",
+                "Server.Error",
+                null);
         }
     }
 

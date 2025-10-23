@@ -6,7 +6,7 @@ namespace Timesheet.Infra.Data.Repositories;
 
 public class InMemoryTimesheetEntryRepository : ITimesheetEntryRepository
 {
-    private ConcurrentDictionary<Guid, TimesheetEntry> _entries = [];
+    private readonly ConcurrentDictionary<Guid, TimesheetEntry> _entries = [];
 
     public void Add(TimesheetEntry entry)
     {

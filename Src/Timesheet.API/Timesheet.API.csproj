@@ -8,13 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Timesheet.Infra\Timesheet.Infra.csproj" />
+        <ProjectReference Include="..\Timesheet.Infra\Timesheet.Infra.csproj"/>
     </ItemGroup>
 
 </Project>

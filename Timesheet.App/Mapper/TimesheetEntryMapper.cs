@@ -14,6 +14,7 @@ public static class TimesheetEntryMapper
 
         // domain → response
         config.NewConfig<TimesheetEntry, TimesheetEntryResponse>();
+        
         config.NewConfig<KeyValuePair<int, decimal>, TotalHoursPerProjectResponse>()
             .Map(dest => dest.ProjectId, src => src.Key)
             .Map(dest => dest.TotalHours, src => src.Value);

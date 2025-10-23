@@ -6,10 +6,10 @@ public class TimesheetDuplicateEntryException : TimesheetException
 {
     public TimesheetDuplicateEntryException(int userId, int projectId, DateOnly date)
         : base(
-            message: "A timesheet entry with the same user, project, and date already exists.",
-            errorCode: "Timesheet.DuplicateEntry",
-            statusCode: HttpStatusCode.BadRequest,
-            details: new Dictionary<string, object?>
+            "A timesheet entry with the same user, project, and date already exists.",
+            "Timesheet.DuplicateEntry",
+            HttpStatusCode.BadRequest,
+            new Dictionary<string, object?>
             {
                 ["UserId"] = userId,
                 ["ProjectId"] = projectId,
