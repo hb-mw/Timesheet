@@ -24,10 +24,8 @@ if (builder.HostEnvironment.Environment == "Development")
 }
 
 
-// ✅ optional: read the API relative path from config
 var apiPath ="api/Timesheet/";
 
-// ✅ create HttpClient that points to the same origin
 builder.Services.AddScoped(sp =>
 {
     var uri = new Uri(baseAddress, apiPath);
