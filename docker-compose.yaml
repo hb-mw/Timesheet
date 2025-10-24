@@ -2,27 +2,18 @@ version: "3.9"
 
 services:
   api:
-    build:
-      context: .
-      dockerfile: Src/Timesheet.API/Dockerfile
-    image: timesheet-cmap-api:latest
+    image: ghcr.io/hb-mw/timesheet-api:latest
     container_name: timesheet-api
     ports:
-      - "5599:8080"        # host:container
+      - "5599:8080"
     networks:
       - timesheet-net
 
   webui:
-    build:
-      context: .
-      dockerfile: Src/Timesheet.UI/Dockerfile
-    image: timesheet-cmap-ui:latest
+    image: ghcr.io/hb-mw/timesheet-ui:latest
     container_name: timesheet-ui
     ports:
-      - "5600:80"          # nginx serves on port 80
-    environment:
-      # Used by Blazor app to connect to API (inside the Docker network)
-      - ApiUrl=http://api:8080
+      - "5600:80"
     depends_on:
       - api
     networks:
