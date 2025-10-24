@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,6 +25,7 @@
         <ProjectReference Include="..\..\Src\Timesheet.API\Timesheet.API.csproj"/>
         <ProjectReference Include="..\..\Src\Timesheet.Core\Timesheet.Core.csproj"/>
         <ProjectReference Include="..\..\Src\Timesheet.Infra\Timesheet.Infra.csproj"/>
+        <ProjectReference Include="..\..\Src\Timesheet.Shared\Timesheet.Shared.csproj" />
     </ItemGroup>
 
 </Project>

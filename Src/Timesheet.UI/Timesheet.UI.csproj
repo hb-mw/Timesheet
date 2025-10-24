@@ -4,6 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,12 +26,15 @@
         <Content Update="wwwroot\appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="..\..\.dockerignore">
+          <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Timesheet.Shared\Timesheet.Shared.csproj"/>
+        <ProjectReference Include="..\Timesheet.Shared\Timesheet.Shared.csproj"/>
     </ItemGroup>
-
+    
     <ItemGroup>
         <Compile Update="Pages\TimesheetTableService.cs">
             <DependentUpon>TimesheetTable.razor</DependentUpon>

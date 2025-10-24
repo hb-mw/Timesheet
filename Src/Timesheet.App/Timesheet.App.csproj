@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Timesheet.Shared\Timesheet.Shared.csproj"/>
         <ProjectReference Include="..\Timesheet.Core\Timesheet.Core.csproj"/>
+        <ProjectReference Include="..\Timesheet.Shared\Timesheet.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>

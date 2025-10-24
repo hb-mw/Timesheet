@@ -22,18 +22,17 @@ public class TimesheetAppService(TimesheetDataService dataService)
     /// <returns>
     ///     A <see cref="ServiceResult{T}" /> containing the created entry or validation errors if the operation fails.
     /// </returns>
-    public async Task<ServiceResult<TimesheetEntryResponse>> AddEntry(TimesheetEntryFormModel model)
+    public async Task<ServiceResult<bool>> AddEntry(TimesheetEntryFormModel model)
     {
         var request = model.Adapt<UpsertTimesheetEntryRequest>();
         var response = await dataService.AddEntry(request);
 
         if (response.IsSuccessStatusCode)
         {
-            var created = await response.Content.ReadFromJsonAsync<TimesheetEntryResponse>();
-            return ServiceResult<TimesheetEntryResponse>.Ok(created!, "Entry created successfully.");
+            return ServiceResult<bool>.Ok(true, "Entry created successfully.");
         }
 
-        return await HandleApiError<TimesheetEntryResponse>(response);
+        return await HandleApiError<bool>(response);
     }
 
     /// <summary>

@@ -26,7 +26,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timesheet.App", "Src\Timesh
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{516714AF-F3F3-4871-9877-56AFB9493725}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timesheet.Shared", "Timesheet.Shared\Timesheet.Shared.csproj", "{205BACE3-5BD6-4063-9023-050A5543D409}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timesheet.Shared", "Src\Timesheet.Shared\Timesheet.Shared.csproj", "{205BACE3-5BD6-4063-9023-050A5543D409}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
