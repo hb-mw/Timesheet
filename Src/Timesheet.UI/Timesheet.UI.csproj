@@ -7,8 +7,34 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Mapster" Version="7.4.0"/>
+        <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.9"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9" PrivateAssets="all"/>
+        <PackageReference Include="MudBlazor" Version="8.13.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="wwwroot\css\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="Pages\TimesheetTable.razor.css">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        </Content>
+        <Content Update="wwwroot\appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Timesheet.Shared\Timesheet.Shared.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Pages\TimesheetTableService.cs">
+            <DependentUpon>TimesheetTable.razor</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

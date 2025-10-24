@@ -1,10 +1,8 @@
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Timesheet.App.Models.Requests;
-using Timesheet.App.Models.Requests.Queries;
-using Timesheet.App.Models.Responses;
 using Timesheet.Core.Interfaces.Services;
 using Timesheet.Core.Models;
+using Timesheet.Shared.Contracts;
 
 namespace Timesheet.API.Controllers;
 

@@ -43,12 +43,4 @@ public class InMemoryTimesheetEntryRepository : ITimesheetEntryRepository
     {
         return _entries.GetValueOrDefault(id);
     }
-
-    public bool Exists(int userId, int projectId, DateOnly date)
-    {
-        return _entries.Values.Any(e =>
-            e.UserId == userId &&
-            e.ProjectId == projectId &&
-            e.Date == date);
-    }
 }

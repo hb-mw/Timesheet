@@ -1,0 +1,48 @@
+@page "/projects"
+@using Timesheet.UI.Components
+@using Timesheet.UI.Services.App
+@inject TimesheetAppService TimesheetAppService
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-4 mt-4" Elevation="1">
+
+    <!--Filter Bar-->
+    <TimesheetFilterBar
+        UserId="@UserId"
+        WeekStart="@WeekStart"
+        EnforceMonday="@EnforceMonday"
+        OnFilterChanged="OnFilterChanged"
+        ShowAddButton="false"/>
+
+    <MudDivider Class="my-3"/>
+
+    <!--Project Totals Section -->
+    <MudText Typo="Typo.h6" Class="mb-2">Weekly Project Totals For User @UserId</MudText>
+
+    @if (_loading)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" Class="my-4"/>
+    }
+    else if (_totals is null || !_totals.Any())
+    {
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">
+            No project totals available for this week.
+        </MudText>
+    }
+    else
+    {
+        <MudGrid>
+            @foreach (var item in _totals)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Class="pa-3 hover:shadow-md transition-all">
+                        <MudStack>
+                            <MudText Typo="Typo.subtitle1" Class="fw-bold">Project @item.ProjectId</MudText>
+                            <MudText Typo="Typo.body1" Color="Color.Info">Total: @item.TotalHours h</MudText>
+                        </MudStack>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudPaper>

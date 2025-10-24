@@ -1,0 +1,81 @@
+@using Timesheet.UI.Models.Forms
+
+<MudPaper Class="pa-4" Style="min-width: 320px;">
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.h6">@(IsEditMode ? "Edit Entry" : "Add Entry")</MudText>
+
+        <MudForm @ref="_form" Model="@Model" Validation="Model">
+
+            <MudTextField For="@(() => Model.UserId)"
+                          @bind-Value="Model.UserId"
+                          Label="User ID"
+                          Variant="Variant.Outlined"
+                          T="int"
+                          Immediate="true"
+                          Required="true"/>
+
+            <MudTextField For="@(() => Model.ProjectId)"
+                          @bind-Value="Model.ProjectId"
+                          Label="Project ID"
+                          Variant="Variant.Outlined"
+                          T="int"
+                          Immediate="true"
+                          Required="true"/>
+
+            <MudDatePicker For="@(() => Model.Date)"
+                           @bind-Date="Model.Date"
+                           Editable="true"
+                           Label="Date"
+                           Variant="Variant.Outlined"
+                           Required="true"
+                           DateFormat="dd/MM/yyyy"/>
+
+            <MudTextField For="@(() => Model.Hours)"
+                          @bind-Value="Model.Hours"
+                          Label="Hours"
+                          Variant="Variant.Outlined"
+                          T="decimal"
+                          Immediate="true"
+                          Min="0"
+                          Max="24"
+                          Required="true"/>
+
+            <MudTextField @bind-Value="Model.Description"
+                          Label="Description"
+                          Variant="Variant.Outlined"
+                          Lines="2"
+                          Placeholder="Optional..."/>
+
+            <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mt-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="HandleSubmit">
+                    @(IsEditMode ? "Save Changes" : "Add Entry")
+                </MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Cancel">
+                    Cancel
+                </MudButton>
+            </MudStack>
+        </MudForm>
+    </MudStack>
+
+</MudPaper>
+
+@code {
+    [Parameter] public TimesheetEntryFormModel Model { get; set; } = new();
+    [Parameter] public EventCallback<TimesheetEntryFormModel> OnSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    private MudForm? _form;
+    private bool IsEditMode => Model.Id is not null;
+
+    private async Task HandleSubmit()
+    {
+        await _form!.Validate();
+        if (!_form.IsValid)
+        {
+            return;
+        }
+
+        await OnSubmit.InvokeAsync(Model);
+    }
+
+    private async Task Cancel() => await OnCancel.InvokeAsync();
+}

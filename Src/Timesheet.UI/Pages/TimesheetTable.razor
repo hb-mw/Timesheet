@@ -1,0 +1,111 @@
+@page "/"
+@using System.Globalization
+@using Timesheet.UI.Components
+@using Timesheet.UI.Services.App
+@inject TimesheetAppService TimesheetAppService
+
+<MudPaper Class="pa-4">
+
+    <!-- Filter/Action Bar -->
+    <TimesheetFilterBar UserId="@UserId"
+                        WeekStart="@WeekStart"
+                        EnforceMonday="@EnforceMonday"
+                        OnFilterChanged="OnFilterChanged"
+                        OnAddClicked="OpenAddForm"
+                        ShowAddButton="true"/>
+    <MudDivider Class="my-3"/>
+
+    <!-- Timesheet Entry TABLE -->
+    <MudTable Loading="IsLoading" Items="FilteredRows" Hover="true" Dense="true" Bordered="true" Class="mb-3">
+
+        <HeaderContent>
+            <MudTh>UserID : Project</MudTh>
+            @foreach (var day in DaysToShow)
+            {
+                <MudTh Class="text-center">
+                    @day.ToString("ddd", CultureInfo.InvariantCulture)<br/>
+                    @day.ToString("dd/MM", CultureInfo.InvariantCulture)
+                </MudTh>
+            }
+            <MudTh Class="text-end">Task Total</MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd>@($"{context.UserId} : {context.ProjectId}")</MudTd>
+
+            @foreach (var date in DaysToShow)
+            {
+                <MudTd Style="position: relative;" Class="text-center pa-1">
+
+                    @if (context.Entries.TryGetValue(date, out var entry))
+                    {
+                        <MudPaper Elevation="0" Class="pa-1 rounded-md hover:bg-grey-light transition-all duration-200"
+                                  Style="position: relative;">
+                            <MudStack Spacing="0" AlignItems="AlignItems.Center">
+                                <MudText Typo="Typo.body1" Class="fw-bold">@entry.Hours</MudText>
+
+                                @if (_expandedCells.Contains(entry.Id))
+                                {
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">@entry.Description</MudText>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(entry.Description))
+                                {
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary" Style="opacity:0.75;">
+                                    </MudText>
+                                }
+                            </MudStack>
+
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                <!-- Edit/Delete icons -->
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                               Size="Size.Small"
+                                               Color="Color.Primary"
+                                               OnClick="@(() => OpenEditForm(entry))"/>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                               Size="Size.Small"
+                                               Color="Color.Error"
+                                               OnClick="@(() => DeleteEntry(entry.Id))"/>
+                                <!-- Expand toggle -->
+                                @if (!string.IsNullOrWhiteSpace(entry.Description))
+                                {
+                                    <MudButton Variant="Variant.Text"
+                                               Color="Color.Secondary"
+                                               Size="Size.Small"
+                                               OnClick="@(() => ToggleExpand(entry.Id))"
+                                               Style="min-height: 16px; line-height: 12px; font-size: 0.7rem;">
+                                        @(_expandedCells.Contains(entry.Id) ? "Hide" : "More")
+                                    </MudButton>
+                                }
+                            </MudStack>
+                        </MudPaper>
+                    }
+                </MudTd>
+            }
+
+            <MudTd>@context.TotalHours</MudTd>
+        </RowTemplate>
+
+        <FooterContent>
+            <MudTd Class="fw-bold">Daily Total:</MudTd>
+            @foreach (var date in DaysToShow)
+            {
+                <MudTd Class="fw-bold text-center">
+                    <MudText Align="Align.Center" Color="Color.Info">
+                        @GetDailyTotal(date)
+                    </MudText>
+                </MudTd>
+            }
+        </FooterContent>
+    </MudTable>
+
+    <!-- ADD FORM POPOVER -->
+    <MudOverlay @bind-Visible="_isFormOpen" AutoClose="true">
+        <MudPopover Open="@_isFormOpen" Fixed="true"
+                    AnchorOrigin="Origin.CenterCenter"
+                    TransformOrigin="Origin.CenterCenter">
+            <TimesheetForm Model="@_formModel"
+                           OnSubmit="HandleFormSubmit"
+                           OnCancel="CloseForm"/>
+        </MudPopover>
+    </MudOverlay>
+</MudPaper>

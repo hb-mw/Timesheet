@@ -1,0 +1,51 @@
+@using MudBlazor
+
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Spacing="2">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+        <MudText Typo="Typo.h6">Filter by User ID:</MudText>
+
+        <MudTextField T="int?"
+                      Value="@UserId"
+                      ValueChanged="@OnUserIdChanged"
+                      Style="width: 100px;"
+                      Variant="Variant.Outlined"
+                      Immediate="true"/>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos"
+                           Size="Size.Small"
+                           Color="Color.Primary"
+                           OnClick="@PreviousWeek"/>
+
+            <MudDatePicker Label="Week start"
+                           Date="@WeekStart"
+                           Editable="true"
+                           DateChanged="@OnWeekChanged"
+                           Variant="Variant.Outlined"
+                           DateFormat="dd/MM/yyyy"/>
+
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos"
+                           Size="Size.Small"
+                           Color="Color.Primary"
+                           OnClick="@NextWeek"/>
+        </MudStack>
+
+        <MudCheckBox Value="@EnforceMonday"
+                     T="bool"
+                     ValueChanged="@(v => OnEnforceMondayChanged(v))"
+                     Color="Color.Primary"
+                     Label="Enforce Monday date"/>
+
+    </MudStack>
+
+    <MudSpacer/>
+
+    @if (ShowAddButton)
+    {
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Success"
+                   OnClick="@OnAddClicked">
+            Add Entry
+        </MudButton>
+    }
+</MudStack>

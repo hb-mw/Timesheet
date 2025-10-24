@@ -1,16 +1,18 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
+<MudThemeProvider/>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudText Typo="Typo.h5" Class="ml-3">Timesheet-MW</MudText>
+        <MudNavLink Href="/" Match="NavLinkMatch.All" Class="text-white px-3" Style="text-decoration:none;width: 200px">
+            Timesheet
+        </MudNavLink>
+        <MudNavLink Href="/projects" Match="NavLinkMatch.Prefix" Class="text-white px-3"
+                    Style="text-decoration:none; width: 200px">
+            Projects
+        </MudNavLink>
+    </MudAppBar>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
