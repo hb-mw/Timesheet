@@ -26,7 +26,7 @@ public class TimesheetEntryServiceTests
             Hours = hours
         };
     }
-    
+
     [Fact]
     public void AddEntry_ShouldAdd_WhenValid()
     {
@@ -65,7 +65,7 @@ public class TimesheetEntryServiceTests
 
         action.Should().Throw<TimesheetDuplicateEntryException>();
     }
-    
+
     [Fact]
     public void UpdateEntry_ShouldThrow_WhenEntryDoesNotExist()
     {
@@ -91,7 +91,7 @@ public class TimesheetEntryServiceTests
 
         _repo.Received(1).Update(entry);
     }
-    
+
     [Fact]
     public void DeleteEntry_ShouldThrow_WhenEntryDoesNotExist()
     {
@@ -115,7 +115,7 @@ public class TimesheetEntryServiceTests
 
         _repo.Received(1).Delete(id);
     }
-    
+
     [Fact]
     public void GetEntriesForUser_ShouldReturnRepositoryResults()
     {
@@ -126,7 +126,7 @@ public class TimesheetEntryServiceTests
 
         result.Should().BeEquivalentTo(entries);
     }
-    
+
     [Fact]
     public void GetEntriesForUserWeek_ShouldCallRepositoryWithCorrectRange()
     {

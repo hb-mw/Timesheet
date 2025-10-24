@@ -9,64 +9,65 @@ using Timesheet.UI.Services.App;
 namespace Timesheet.UI.Pages;
 
 /// <summary>
-/// Represents the main timesheet table component responsible for displaying,
-/// filtering, and managing timesheet entries.
+///     Represents the main timesheet table component responsible for displaying,
+///     filtering, and managing timesheet entries.
 /// </summary>
 public partial class TimesheetTable : ComponentBase
 {
     /// <summary>
-    /// Snackbar service for displaying notifications to the user.
+    ///     Keeps track of expanded cells in the UI to manage row details display.
     /// </summary>
-    [Inject] private ISnackbar Snackbar { get; set; } = null!;
+    private readonly HashSet<Guid> _expandedCells = [];
 
     /// <summary>
-    /// The ID of the current user whose timesheet is being displayed.
-    /// </summary>
-    private int UserId { get; set; } = 1;
-
-    /// <summary>
-    /// The start date of the week currently being displayed.
-    /// </summary>
-    private DateTime WeekStart { get; set; } = DateTime.Today.StartOfWeek(DayOfWeek.Monday);
-
-    /// <summary>
-    /// Indicates whether to enforce that the selected week always starts on Monday.
-    /// </summary>
-    private bool EnforceMonday { get; set; } = true;
-
-    /// <summary>
-    /// A list of dates representing the days shown in the current week view.
-    /// </summary>
-    private List<DateOnly> DaysToShow { get; set; } = new();
-
-    /// <summary>
-    /// The list of timesheet rows currently filtered and displayed.
-    /// </summary>
-    private List<TimesheetRow> FilteredRows { get; set; } = new();
-
-    /// <summary>
-    /// Indicates whether data is currently being loaded.
-    /// </summary>
-    private bool IsLoading { get; set; }
-
-    /// <summary>
-    /// Tracks whether the form for adding or editing entries is currently open.
-    /// </summary>
-    private bool _isFormOpen;
-
-    /// <summary>
-    /// The form model bound to the add/edit entry dialog.
+    ///     The form model bound to the add/edit entry dialog.
     /// </summary>
     private TimesheetEntryFormModel _formModel = new();
 
     /// <summary>
-    /// Keeps track of expanded cells in the UI to manage row details display.
+    ///     Tracks whether the form for adding or editing entries is currently open.
     /// </summary>
-    private readonly HashSet<Guid> _expandedCells = []; 
+    private bool _isFormOpen;
 
     /// <summary>
-    /// Called when the component is initialized.
-    /// Fetches the initial timesheet data.
+    ///     Snackbar service for displaying notifications to the user.
+    /// </summary>
+    [Inject]
+    private ISnackbar Snackbar { get; set; } = null!;
+
+    /// <summary>
+    ///     The ID of the current user whose timesheet is being displayed.
+    /// </summary>
+    private int UserId { get; set; } = 1;
+
+    /// <summary>
+    ///     The start date of the week currently being displayed.
+    /// </summary>
+    private DateTime WeekStart { get; set; } = DateTime.Today.StartOfWeek(DayOfWeek.Monday);
+
+    /// <summary>
+    ///     Indicates whether to enforce that the selected week always starts on Monday.
+    /// </summary>
+    private bool EnforceMonday { get; set; } = true;
+
+    /// <summary>
+    ///     A list of dates representing the days shown in the current week view.
+    /// </summary>
+    private List<DateOnly> DaysToShow { get; set; } = new();
+
+    /// <summary>
+    ///     The list of timesheet rows currently filtered and displayed.
+    /// </summary>
+    private List<TimesheetRow> FilteredRows { get; set; } = new();
+
+    /// <summary>
+    ///     Indicates whether data is currently being loaded.
+    /// </summary>
+    private bool IsLoading { get; set; }
+
+    /// <summary>
+    ///     Called when the component is initialized.
+    ///     Fetches the initial timesheet data.
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
@@ -74,7 +75,7 @@ public partial class TimesheetTable : ComponentBase
     }
 
     /// <summary>
-    /// Loads timesheet entries for the current user and week and prepares the display data.
+    ///     Loads timesheet entries for the current user and week and prepares the display data.
     /// </summary>
     private async Task FetchFilteredData()
     {
@@ -93,16 +94,18 @@ public partial class TimesheetTable : ComponentBase
     }
 
     /// <summary>
-    /// Calculates the total hours recorded for a specific day.
+    ///     Calculates the total hours recorded for a specific day.
     /// </summary>
     /// <param name="date">The date for which to calculate total hours.</param>
     /// <returns>The total number of hours for the given day.</returns>
     private decimal GetDailyTotal(DateOnly date)
-        => FilteredRows.Sum(r => r.Entries.TryGetValue(date, out var e) ? e.Hours : 0);
+    {
+        return FilteredRows.Sum(r => r.Entries.TryGetValue(date, out var e) ? e.Hours : 0);
+    }
 
     /// <summary>
-    /// Handles submission of the add or edit form.
-    /// Calls the appropriate service method and updates the UI accordingly.
+    ///     Handles submission of the add or edit form.
+    ///     Calls the appropriate service method and updates the UI accordingly.
     /// </summary>
     /// <param name="model">The submitted form model.</param>
     private async Task HandleFormSubmit(TimesheetEntryFormModel model)
@@ -118,7 +121,7 @@ public partial class TimesheetTable : ComponentBase
                 return;
             }
 
-            Snackbar.Add(result.Errors[0], Severity.Error);
+            Snackbar.Add(result.Errors[0]??"Unknown error!", Severity.Error);
         }
         else
         {
@@ -131,12 +134,12 @@ public partial class TimesheetTable : ComponentBase
                 return;
             }
 
-            Snackbar.Add(result.Errors[0], Severity.Error);
+            Snackbar.Add(result.Errors[0]??"Unknown error!", Severity.Error);
         }
     }
 
     /// <summary>
-    /// Opens the form pre-filled with an existing entry for editing.
+    ///     Opens the form pre-filled with an existing entry for editing.
     /// </summary>
     /// <param name="entry">The entry to edit.</param>
     private void OpenEditForm(TimesheetEntryResponse entry)
@@ -154,7 +157,7 @@ public partial class TimesheetTable : ComponentBase
     }
 
     /// <summary>
-    /// Deletes a specific timesheet entry and refreshes the displayed data.
+    ///     Deletes a specific timesheet entry and refreshes the displayed data.
     /// </summary>
     /// <param name="id">The unique identifier of the entry to delete.</param>
     private async Task DeleteEntry(Guid id)
@@ -167,27 +170,24 @@ public partial class TimesheetTable : ComponentBase
             return;
         }
 
-        if (result.Errors.Count > 0)
-        {
-            Snackbar.Add(result.Errors[0], Severity.Error);
-        }
+        if (result.Errors.Count > 0) Snackbar.Add(result.Errors[0]??"Unknown error!", Severity.Error);
     }
 
     /// <summary>
-    /// Handles updates when the filter bar changes (e.g., user, week, enforce Monday).
-    /// Refreshes data based on the new filter values.
+    ///     Handles updates when the filter bar changes (e.g., user, week, enforce Monday).
+    ///     Refreshes data based on the new filter values.
     /// </summary>
     /// <param name="filter">Tuple containing filter parameters.</param>
     private async Task OnFilterChanged((int? UserId, DateTime WeekStart, bool EnforceMonday) filter)
     {
-        UserId = filter.UserId.Value;
+        UserId = filter.UserId!.Value;
         WeekStart = filter.WeekStart;
         EnforceMonday = filter.EnforceMonday;
         await FetchFilteredData();
     }
 
     /// <summary>
-    /// Opens a blank form for adding a new timesheet entry.
+    ///     Opens a blank form for adding a new timesheet entry.
     /// </summary>
     private void OpenAddForm()
     {
@@ -196,7 +196,7 @@ public partial class TimesheetTable : ComponentBase
     }
 
     /// <summary>
-    /// Expands or collapses a cell in the UI by toggling its ID in the expanded set.
+    ///     Expands or collapses a cell in the UI by toggling its ID in the expanded set.
     /// </summary>
     /// <param name="id">The unique identifier of the cell to toggle.</param>
     private void ToggleExpand(Guid id)
@@ -206,7 +206,10 @@ public partial class TimesheetTable : ComponentBase
     }
 
     /// <summary>
-    /// Closes the add/edit form dialog.
+    ///     Closes the add/edit form dialog.
     /// </summary>
-    private void CloseForm() => _isFormOpen = false;
+    private void CloseForm()
+    {
+        _isFormOpen = false;
+    }
 }

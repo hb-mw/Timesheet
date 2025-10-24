@@ -16,7 +16,8 @@ public class InMemoryTimesheetEntryRepositoryTests
 
         _repo.Add(entry);
 
-        // Assert.True(_repo.Exists(entry.Id));
+        var result = _repo.Get(entry.Id);
+        Assert.NotNull(result);
     }
 
     [Fact]
@@ -40,13 +41,14 @@ public class InMemoryTimesheetEntryRepositoryTests
 
         _repo.Delete(entry.Id);
 
-        // Assert.False(_repo.Exists(entry.Id));
+        var result = _repo.Get(entry.Id);
+        Assert.Null(result);
     }
 
     [Fact]
     public void GetForUser_ShouldReturnOnlyThatUsersEntries()
     {
-        var user1 = CreateEntry(1);
+        var user1 = CreateEntry();
         var user2 = CreateEntry(2);
         _repo.Add(user1);
         _repo.Add(user2);
@@ -70,7 +72,7 @@ public class InMemoryTimesheetEntryRepositoryTests
         Assert.Single(results);
         Assert.Equal(new DateOnly(2024, 1, 10), results.First().Date);
     }
-    
+
 
     [Fact]
     public void Add_ShouldNotOverwriteExistingEntry_WhenIdAlreadyExists()

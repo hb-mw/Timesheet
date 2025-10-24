@@ -40,10 +40,7 @@ public partial class TimesheetFilterBar : ComponentBase
 
     private async Task OnUserIdChanged(int? newId)
     {
-        if (newId is null || newId.Value == UserId)
-        {
-            return;
-        }
+        if (newId is null || newId.Value == UserId) return;
 
         if (newId < 1)
         {
@@ -55,17 +52,15 @@ public partial class TimesheetFilterBar : ComponentBase
         await OnFilterChanged.InvokeAsync((UserId, WeekStart, EnforceMonday));
     }
 
-    private async Task PreviousWeek()
+    private void PreviousWeek()
     {
         Console.WriteLine("PREV WEEK");
         WeekStart = WeekStart.AddDays(-7);
-        //await OnFilterChanged.InvokeAsync((UserId, WeekStart, EnforceMonday));
     }
 
-    private async Task NextWeek()
+    private void NextWeek()
     {
         Console.WriteLine("NEXT WEEK");
         WeekStart = WeekStart.AddDays(7);
-        // await OnFilterChanged.InvokeAsync((UserId, WeekStart, EnforceMonday));
     }
 }

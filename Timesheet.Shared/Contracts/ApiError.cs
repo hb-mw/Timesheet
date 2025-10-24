@@ -8,6 +8,6 @@ public class ApiError
     public string? Code { get; set; }
     public string? TraceId { get; set; }
     public Dictionary<string, object>? Details { get; set; }
-    
+
     public Dictionary<string, object>? Errors { get; set; }
 }

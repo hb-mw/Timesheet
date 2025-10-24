@@ -1,5 +1,3 @@
-using System.Net;
-
 namespace Timesheet.Core.Exceptions;
 
 public class ValidationException : TimesheetException
@@ -9,8 +7,7 @@ public class ValidationException : TimesheetException
         string message = "One or more validation errors occurred.")
         : base(
             message,
-            "Timesheet.ValidationFailed",
-            HttpStatusCode.BadRequest)
+            "Timesheet.ValidationFailed")
     {
         FieldErrors = new Dictionary<string, string[]>(fieldErrors);
     }

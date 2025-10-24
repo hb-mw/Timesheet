@@ -1,5 +1,4 @@
 @using Timesheet.UI.Models.Forms
-
 <MudPaper Class="pa-4" Style="min-width: 320px;">
     <MudStack Spacing="2">
         <MudText Typo="Typo.h6">@(IsEditMode ? "Edit Entry" : "Add Entry")</MudText>
@@ -36,8 +35,6 @@
                           Variant="Variant.Outlined"
                           T="decimal"
                           Immediate="true"
-                          Min="0"
-                          Max="24"
                           Required="true"/>
 
             <MudTextField @bind-Value="Model.Description"
@@ -77,5 +74,8 @@
         await OnSubmit.InvokeAsync(Model);
     }
 
-    private async Task Cancel() => await OnCancel.InvokeAsync();
+    private async Task Cancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
 }
